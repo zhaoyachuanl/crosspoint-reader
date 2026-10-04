@@ -1,11 +1,15 @@
 #include "SdCardFontSystem.h"
 
+#include <BoardConfig.h>
 #include <GfxRenderer.h>
 #include <HalStorage.h>
 #include <Logging.h>
 #include <Memory.h>
 #include <TtfEpdFont.h>
 #include <esp_heap_caps.h>
+#if FREEINK_DEVICE_READPICO
+#include <builtinFonts/readpico_ui_ids.generated.h>
+#endif
 
 #include <iterator>
 
@@ -61,9 +65,16 @@ struct UiFontSize {
   uint8_t pointSize;
 };
 constexpr UiFontSize kUiFontSizes[] = {
+#if FREEINK_DEVICE_READPICO
+    {SMALL_FONT_ID, 12},
+    {UI_10_FONT_ID, 15},
+    {UI_12_FONT_ID, 18},
+    {READPICO_HOME_MENU_FONT_ID, 22},
+#else
     {SMALL_FONT_ID, 8},
     {UI_10_FONT_ID, 10},
     {UI_12_FONT_ID, 12},
+#endif
 };
 
 }  // namespace
@@ -223,7 +234,16 @@ void SdCardFontSystem::setupUiFallbacks(GfxRenderer& renderer) {
   }
 
   for (const auto& ui : kUiFontSizes) {
-    const int sdFontId = manager_.loadFamilyExtraSize(*family, renderer, ui.pointSize);
+    uint8_t fallbackSize = ui.pointSize;
+#if FREEINK_DEVICE_READPICO
+    // Existing SD font packs often omit 15pt. Retain CJK coverage using the
+    // nearest supplied size rather than dropping the fallback completely.
+    if (!family->findFile(fallbackSize)) {
+      const auto* nearest = family->findNearestSize(fallbackSize);
+      if (nearest) fallbackSize = nearest->pointSize;
+    }
+#endif
+    const int sdFontId = manager_.loadFamilyExtraSize(*family, renderer, fallbackSize);
     if (sdFontId != 0) {
       renderer.setFallbackFont(ui.fontId, sdFontId);
     } else {

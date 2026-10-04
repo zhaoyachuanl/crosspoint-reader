@@ -10,6 +10,14 @@
 // Global HalGPIO instance
 HalGPIO gpio;
 
+bool HalGPIO::shutdownRequested() const {
+#if CROSSPOINT_EMULATED == 0
+  return inputMgr.shutdownRequested();
+#else
+  return false;
+#endif
+}
+
 namespace {
 constexpr char HW_NAMESPACE[] = "cphw";
 constexpr char NVS_KEY_DEV_OVERRIDE[] = "dev_ovr";  // 0=auto, 1=x4, 2=x3

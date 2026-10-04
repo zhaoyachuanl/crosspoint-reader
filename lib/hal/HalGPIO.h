@@ -73,6 +73,7 @@ class HalGPIO {
 
   // Button input methods
   void update();
+  bool shutdownRequested() const;
   bool isPressed(uint8_t buttonIndex) const;
   bool wasPressed(uint8_t buttonIndex) const;
   bool wasAnyPressed() const;

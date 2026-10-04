@@ -1,11 +1,22 @@
 #pragma once
 
+#include <BoardConfig.h>
+
 #include "components/themes/BaseTheme.h"
 
 class GfxRenderer;
 
 // Lyra theme metrics (zero runtime cost)
 namespace LyraMetrics {
+#if FREEINK_DEVICE_READPICO
+constexpr int homeCoverHeight = static_cast<int>(226 * BoardConfig::READ_PICO.uiScale);
+constexpr int menuRowHeight = 80;
+constexpr int menuSpacing = 16;
+#else
+constexpr int homeCoverHeight = 226;
+constexpr int menuRowHeight = 64;
+constexpr int menuSpacing = 8;
+#endif
 constexpr ThemeMetrics values = {.batteryWidth = 16,
                                  .batteryHeight = 12,
                                  // Shared anchor for every header band, including the cover-grid
@@ -32,15 +43,15 @@ constexpr ThemeMetrics values = {.batteryWidth = 16,
                                  .headerTitleAlign = 0,  // left
                                  .headerBatterySide = 0,
                                  .headerClockCentered = false,
-                                 .menuRowHeight = 64,
-                                 .menuSpacing = 8,
+                                 .menuRowHeight = menuRowHeight,
+                                 .menuSpacing = menuSpacing,
                                  .tabSpacing = 8,
                                  .tabBarHeight = 48,
                                  .scrollBarWidth = 4,
                                  .scrollBarRightOffset = 5,
                                  .homeTopPadding = 56,
-                                 .homeCoverHeight = 226,
-                                 .homeCoverTileHeight = 242,
+                                 .homeCoverHeight = homeCoverHeight,
+                                 .homeCoverTileHeight = homeCoverHeight + 16,
                                  .homeRecentBooksCount = 1,
                                  .homeContinueReadingInMenu = false,
                                  .homeMenuTopOffset = 16,

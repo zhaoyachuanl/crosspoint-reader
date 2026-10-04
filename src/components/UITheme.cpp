@@ -1,5 +1,6 @@
 #include "UITheme.h"
 
+#include <BoardConfig.h>
 #include <FsHelpers.h>
 #include <GfxRenderer.h>
 #include <HalGPIO.h>
@@ -78,6 +79,61 @@ const ThemeMetrics& UITheme::getMetrics() const {
   const bool touch = gpio.hasTouch();
   if (!metricsValid || touch != metricsForTouch) {
     adjustedMetrics = *currentMetrics;
+#if FREEINK_DEVICE_READPICO
+    // Legacy menu/cover drawing owns its dimensions; retain those here so
+    // drawing, thumbnail generation and touch use the same geometry.
+    constexpr int ThemeMetrics::* scaled[] = {&ThemeMetrics::batteryWidth,
+                                              &ThemeMetrics::batteryHeight,
+                                              &ThemeMetrics::topPadding,
+                                              &ThemeMetrics::batteryBarHeight,
+                                              &ThemeMetrics::headerHeight,
+                                              &ThemeMetrics::verticalSpacing,
+                                              &ThemeMetrics::previewPadding,
+                                              &ThemeMetrics::contentSidePadding,
+                                              &ThemeMetrics::listRowHeight,
+                                              &ThemeMetrics::listWithSubtitleRowHeight,
+                                              &ThemeMetrics::listRowGap,
+                                              &ThemeMetrics::listRowRadius,
+                                              &ThemeMetrics::listInset,
+                                              &ThemeMetrics::listSidePadding,
+                                              &ThemeMetrics::listScrollWidth,
+                                              &ThemeMetrics::headerSidePadding,
+                                              &ThemeMetrics::headerUnderlineSize,
+                                              &ThemeMetrics::tabSpacing,
+                                              &ThemeMetrics::tabBarHeight,
+                                              &ThemeMetrics::coverGridTabBarHeight,
+                                              &ThemeMetrics::scrollBarWidth,
+                                              &ThemeMetrics::scrollBarRightOffset,
+                                              &ThemeMetrics::homeTopPadding,
+                                              &ThemeMetrics::homeMenuTopOffset,
+                                              &ThemeMetrics::buttonHintsHeight,
+                                              &ThemeMetrics::sideButtonHintsWidth,
+                                              &ThemeMetrics::progressBarHeight,
+                                              &ThemeMetrics::progressBarMarginTop,
+                                              &ThemeMetrics::statusBarHorizontalMargin,
+                                              &ThemeMetrics::statusBarVerticalMargin,
+                                              &ThemeMetrics::keyboardKeyHeight,
+                                              &ThemeMetrics::keyboardKeySpacing,
+                                              &ThemeMetrics::keyboardVerticalOffset,
+                                              &ThemeMetrics::popupMarginX,
+                                              &ThemeMetrics::popupMarginY,
+                                              &ThemeMetrics::popupFrameThickness,
+                                              &ThemeMetrics::popupCornerRadius,
+                                              &ThemeMetrics::popupTextBaselineOffsetY,
+                                              &ThemeMetrics::popupProgressBarHeight,
+                                              &ThemeMetrics::optionPopupItemSpacing,
+                                              &ThemeMetrics::optionPopupInnerPadding,
+                                              &ThemeMetrics::optionPopupSelectionVPadding,
+                                              &ThemeMetrics::optionPopupDialogSideMargin,
+                                              &ThemeMetrics::textFieldHorizontalPadding,
+                                              &ThemeMetrics::textFieldNormalThickness,
+                                              &ThemeMetrics::textFieldCursorThickness,
+                                              &ThemeMetrics::textFieldLineEndOffset,
+                                              &ThemeMetrics::controlRadius,
+                                              &ThemeMetrics::sheetRadius};
+    for (auto field : scaled)
+      adjustedMetrics.*field = static_cast<int>(adjustedMetrics.*field * BoardConfig::ACTIVE.uiScale);
+#endif
     if (touch) {
       adjustedMetrics.buttonHintsHeight = 0;
     }

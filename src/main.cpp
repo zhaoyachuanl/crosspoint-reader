@@ -21,6 +21,10 @@
 #include <WiFi.h>
 #include <XteinkDetect.h>
 #include <builtinFonts/all.h>
+#if FREEINK_DEVICE_READPICO
+#include <builtinFonts/readpico_ui.generated.h>
+#include <builtinFonts/readpico_ui_ids.generated.h>
+#endif
 
 #include <cstring>
 
@@ -125,15 +129,23 @@ EpdFontFamily notosans18FontFamily(&notosans18RegularFont, &notosans18BoldFont, 
 
 #endif  // OMIT_FONTS
 
+#if FREEINK_DEVICE_READPICO
+EpdFont smallFont(&ubuntu_12_regular);
+EpdFont ui10RegularFont(&readpico_ui15_regular);
+EpdFont ui10BoldFont(&readpico_ui15_bold);
+EpdFont ui12RegularFont(&readpico_ui18_regular);
+EpdFont ui12BoldFont(&readpico_ui18_bold);
+EpdFont homeMenuFont(&readpico_ui22_regular);
+EpdFontFamily homeMenuFontFamily(&homeMenuFont);
+#else
 EpdFont smallFont(&notosans_8_regular);
-EpdFontFamily smallFontFamily(&smallFont);
-
 EpdFont ui10RegularFont(&ubuntu_10_regular);
 EpdFont ui10BoldFont(&ubuntu_10_bold);
-EpdFontFamily ui10FontFamily(&ui10RegularFont, &ui10BoldFont);
-
 EpdFont ui12RegularFont(&ubuntu_12_regular);
 EpdFont ui12BoldFont(&ubuntu_12_bold);
+#endif
+EpdFontFamily smallFontFamily(&smallFont);
+EpdFontFamily ui10FontFamily(&ui10RegularFont, &ui10BoldFont);
 EpdFontFamily ui12FontFamily(&ui12RegularFont, &ui12BoldFont);
 
 // Definitions for SilentRestart.h. RTC_NOINIT survives ESP.restart() but not power loss.
@@ -420,6 +432,9 @@ void setupDisplayAndFonts(bool seamless = false) {
   renderer.insertFont(UI_10_FONT_ID, ui10FontFamily);
   renderer.insertFont(UI_12_FONT_ID, ui12FontFamily);
   renderer.insertFont(SMALL_FONT_ID, smallFontFamily);
+#if FREEINK_DEVICE_READPICO
+  renderer.insertFont(READPICO_HOME_MENU_FONT_ID, homeMenuFontFamily);
+#endif
 
   // Discover and load SD card fonts
   sdFontSystem.begin(renderer);
@@ -679,6 +694,11 @@ void loop() {
 
   gpio.setSharedConfirmPowerShortPressEmitsPower(SETTINGS.shortPwrBtn == CrossPointSettings::SHORT_PWRBTN::SLEEP);
   mappedInputManager.update();
+
+  if (gpio.shutdownRequested() && !activityManager.requiresExclusiveStorageLoop()) {
+    LOG_INF("PWR", "Hardware requested sleep; saving state");
+    enterDeepSleep();
+  }
 
   if (activityManager.requiresExclusiveStorageLoop()) {
     // USB Drive handed the raw SD card to the host. Do not run screenshots,

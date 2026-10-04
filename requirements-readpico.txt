@@ -1,0 +1,3 @@
+# Used only by the Read Pico UI font build step.
+freetype-py==2.5.1
+fonttools==4.66.1
