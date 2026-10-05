@@ -695,10 +695,12 @@ void loop() {
   gpio.setSharedConfirmPowerShortPressEmitsPower(SETTINGS.shortPwrBtn == CrossPointSettings::SHORT_PWRBTN::SLEEP);
   mappedInputManager.update();
 
+#if FREEINK_DEVICE_READPICO
   if (gpio.shutdownRequested() && !activityManager.requiresExclusiveStorageLoop()) {
     LOG_INF("PWR", "Hardware requested sleep; saving state");
     enterDeepSleep();
   }
+#endif
 
   if (activityManager.requiresExclusiveStorageLoop()) {
     // USB Drive handed the raw SD card to the host. Do not run screenshots,

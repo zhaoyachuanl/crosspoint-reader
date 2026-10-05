@@ -20,6 +20,11 @@ The parent repository pins the Read Pico SDK implementation through its
 `freeink-sdk` gitlink. Local commits must also be pushed to the SDK fork before
 publishing the parent branch, so other checkouts can fetch the pinned commit.
 
+The current integration includes CrossPoint `develop` at `50823ffa` and SDK
+`main` at `c98ff2c`, plus the Read Pico hardware commits. This SDK baseline is
+newer than CrossPoint's upstream gitlink. Read Pico and X3/X4 builds, hardware
+host tests, and the SDK's ZIP/LCP/protected-entry tests passed together.
+
 The environment uses the existing Arduino 3.3.11 / ESP-IDF 5.5.5 toolchain.
 Its font build step generates larger UI fonts from the existing licensed
 sources: 15pt subtitles and 18pt body/title text, with 12pt small labels.
