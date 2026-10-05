@@ -19,10 +19,7 @@
 #include "FirmwareFlasher.h"
 
 namespace {
-#ifndef CROSSPOINT_OTA_REPO
-#define CROSSPOINT_OTA_REPO "crosspoint-reader/crosspoint-reader"
-#endif
-constexpr char latestReleaseUrl[] = "https://api.github.com/repos/" CROSSPOINT_OTA_REPO "/releases/latest";
+constexpr char latestReleaseUrl[] = "https://api.github.com/repos/crosspoint-reader/crosspoint-reader/releases/latest";
 }  // namespace
 
 OtaUpdater::OtaUpdaterError OtaUpdater::checkForUpdate() {

@@ -47,7 +47,7 @@ Its `vendor-manifest.json` pins the demo commit and records every source hash.
 The SDK library README describes source provenance and its memory budget.
 
 CrossPoint changes are limited to the build environment, firmware board tag,
-OTA repository configuration, board-scaled UI fonts/metrics, and a HAL shutdown request. The reader engines,
+board-scaled UI fonts/metrics, and a HAL shutdown request. The reader engines,
 rendering geometry, and storage implementation remain shared with upstream.
 EPUB parsing, malformed-book compatibility, and indexing error recovery belong
 upstream. This hardware fork does not add book-specific handling or change
@@ -56,8 +56,9 @@ For updates, first use the SDK commit selected by the new CrossPoint baseline,
 then reapply the SDK hardware changes and build existing C3/S3 targets as well
 as `readpico`. Do not independently advance the SDK to its latest branch tip.
 
-The firmware carries the `readpico` board tag and uses this fork's OTA channel.
-Publishing a compatible `-readpico` release asset is a separate step.
+The firmware carries the `readpico` board tag and uses the upstream OTA channel.
+Updates require a compatible `-readpico` release asset; otherwise the existing
+updater reports no update. Publishing that asset is a separate step.
 
 ## Current validation and limits
 
